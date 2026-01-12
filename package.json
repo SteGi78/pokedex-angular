@@ -7,7 +7,8 @@
     "build": "ng build",
     "build:gh": "ng build --base-href=./",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "deploy": "npm run build:gh && npx gh-pages -d dist/pokedex-angular"
   },
   "dependencies": {
     "@angular/animations": "19.2.18",
@@ -23,10 +24,11 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/cli": "19.2.18",
     "@angular-devkit/build-angular": "19.2.18",
+    "@angular/cli": "19.2.18",
     "@angular/compiler-cli": "19.2.18",
     "@types/jasmine": "^5.1.4",
+    "gh-pages": "^6.3.0",
     "jasmine-core": "^5.1.2",
     "karma": "^6.4.3",
     "karma-chrome-launcher": "^3.2.0",
