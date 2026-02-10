@@ -53,6 +53,8 @@ import { PokedexFooterComponent } from '../components/pokedex-footer.component';
 export class PokedexPageComponent implements OnInit {
   allPokemon: Pokemon[] = [];
   displayedPokemon: Pokemon[] = [];
+  private readonly pokemonById = new Map<number, Pokemon>();
+  private readonly pokemonIndexById = new Map<number, number>();
 
   searchQuery = '';
   sortBy: 'id' | 'name' = 'id';
@@ -101,7 +103,7 @@ export class PokedexPageComponent implements OnInit {
 
   openModal(pokemon: Pokemon): void {
     this.selectedPokemon = pokemon;
-    this.modalIndex = this.allPokemon.findIndex(p => p.id === pokemon.id);
+    this.modalIndex = this.pokemonIndexById.get(pokemon.id) ?? -1;
     document.body.style.overflow = 'hidden';
   }
 
@@ -132,7 +134,7 @@ export class PokedexPageComponent implements OnInit {
   }
 
   async openPokemonById(id: number): Promise<void> {
-    const existing = this.allPokemon.find(p => p.id === id);
+    const existing = this.pokemonById.get(id);
     if (existing) {
       this.openModal(existing);
       return;
@@ -154,7 +156,9 @@ export class PokedexPageComponent implements OnInit {
   private mergePokemon(items: Pokemon[]): void {
     for (const p of items) {
       if (!p) continue;
-      if (this.allPokemon.some(x => x.id === p.id)) continue;
+      if (this.pokemonById.has(p.id)) continue;
+      this.pokemonById.set(p.id, p);
+      this.pokemonIndexById.set(p.id, this.allPokemon.length);
       this.allPokemon.push(p);
     }
   }

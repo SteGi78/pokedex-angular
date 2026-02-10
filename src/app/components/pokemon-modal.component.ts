@@ -135,6 +135,7 @@ export class PokemonModalComponent implements OnChanges {
   activeTab: Tab = 'overview';
   evolutionLoading = false;
   evolutionPokemon: Pokemon[] = [];
+  private evolutionRequestId = 0;
 
   cap = capitalize;
 
@@ -191,6 +192,7 @@ export class PokemonModalComponent implements OnChanges {
   }
 
   private async loadEvolution(): Promise<void> {
+    const requestId = ++this.evolutionRequestId;
     if (!this.pokemon) {
       this.evolutionPokemon = [];
       this.evolutionLoading = false;
@@ -201,11 +203,15 @@ export class PokemonModalComponent implements OnChanges {
     this.evolutionLoading = true;
     this.cdr.markForCheck();
     try {
-      this.evolutionPokemon = await this.api.getEvolutionPokemon(this.pokemon.id);
+      const evolutionPokemon = await this.api.getEvolutionPokemon(this.pokemon.id);
+      if (requestId !== this.evolutionRequestId) return;
+      this.evolutionPokemon = evolutionPokemon;
     } catch (e) {
+      if (requestId !== this.evolutionRequestId) return;
       console.error('Evolution laden fehlgeschlagen', e);
       this.evolutionPokemon = [];
     } finally {
+      if (requestId !== this.evolutionRequestId) return;
       this.evolutionLoading = false;
       this.cdr.markForCheck();
     }
